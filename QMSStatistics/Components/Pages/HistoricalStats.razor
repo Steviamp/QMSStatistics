@@ -16,8 +16,11 @@
             <option value="@b.OfficeNr">@b.OfficeNr - @b.OfficeName</option>
         }
     </select>
+    
     <button class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
 </div>
+<p>Selected Branch: @selectedBranch</p>
+<p>Πλήθος αποτελεσμάτων: @(stats?.Count ?? 0)</p>
 
 @if (stats == null)
 {
@@ -71,12 +74,14 @@ else
 
     private async Task ApplyFilters()
     {
+        Console.WriteLine($"Apply clicked with branch: {selectedBranch}");
         await LoadStatsAsync();
     }
 
     private async Task LoadStatsAsync()
     {
         stats = await StatisticsService.GetHistoricalStatsAsync(fromDate, toDate, null, selectedBranch);
+        StateHasChanged();
     }
 }
 
