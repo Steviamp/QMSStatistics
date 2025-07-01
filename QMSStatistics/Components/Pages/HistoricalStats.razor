@@ -9,6 +9,7 @@
 <div class="mb-4 d-flex gap-2">
     <InputDate @bind-Value="fromDate" class="form-control" />
     <InputDate @bind-Value="toDate" class="form-control" />
+
     <select class="form-select" @bind="selectedBranch">
         <option value="">All Branches</option>
         @foreach (var b in branches)
@@ -16,14 +17,16 @@
             <option value="@b.OfficeNr">@b.OfficeNr - @b.OfficeName</option>
         }
     </select>
-    
-    <button class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
+
+    <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
 </div>
-<p>Selected Branch: @selectedBranch</p>
-<p>Πλήθος αποτελεσμάτων: @(stats?.Count ?? 0)</p>
+
+<p class="text-muted">🔍 Επιλεγμένο κατάστημα: @selectedBranch</p>
+<p class="text-muted">📊 Πλήθος αποτελεσμάτων: @(stats?.Count ?? 0)</p>
 
 @if (stats == null)
 {
+    <p>⚠️ Δεν βρέθηκαν στατιστικά.</p>
     <p>Loading...</p>
 }
 else
@@ -63,25 +66,29 @@ else
     private DateTime fromDate = DateTime.Today.AddDays(-1);
     private DateTime toDate = DateTime.Today;
     private string? selectedBranch = null;
+
     private List<BranchStat>? stats;
     private List<Branch> branches = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("🚀 OnInitializedAsync started");
         branches = await StatisticsService.GetAllBranchesAsync();
+        Console.WriteLine($"📍 Loaded branches: {branches.Count}");
         await LoadStatsAsync();
     }
 
     private async Task ApplyFilters()
     {
-        Console.WriteLine($"Apply clicked with branch: {selectedBranch}");
+        Console.WriteLine($"✅ Apply clicked with branch: {selectedBranch}");
         await LoadStatsAsync();
     }
 
     private async Task LoadStatsAsync()
     {
+        Console.WriteLine("📥 LoadStatsAsync CALLED");
         stats = await StatisticsService.GetHistoricalStatsAsync(fromDate, toDate, null, selectedBranch);
         StateHasChanged();
+        Console.WriteLine($"📊 Stats loaded: {stats?.Count ?? 0}");
     }
 }
-
