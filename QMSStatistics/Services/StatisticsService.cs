@@ -16,10 +16,10 @@ namespace QMSStatistics.Services
         {
             const string sql = @"
                 SELECT DISTINCT 
-                LEVEL1_NR AS OfficeNr,
-                LEVEL1_NAME AS OfficeName
+                OFFICE_NR AS OfficeNr,
+                OFFICE_NAME AS OfficeName
                 FROM CUSTOMER_QUEUE_INFO_DAILY
-                ORDER BY LEVEL1_NR";
+                ORDER BY OFFICE_NR";
 
             using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             var result = await conn.QueryAsync<Branch>(sql);
@@ -30,8 +30,8 @@ namespace QMSStatistics.Services
         {
             var sql = @"
                 SELECT 
-                    LEVEL1_NR AS OfficeNr,
-                    LEVEL1_NAME AS OfficeName,
+                    OFFICE_NR AS OfficeNr,
+                    OFFICE_NAME AS OfficeName,
                     COUNT(*) AS Incoming,
                     SUM(CASE WHEN LOSTTICKET = 1 THEN 1 ELSE 0 END) AS Unattended,
                     SUM(CASE WHEN LOSTTICKET = 0 THEN 1 ELSE 0 END) AS Served,
@@ -40,8 +40,8 @@ namespace QMSStatistics.Services
                     AVG(SERVICE_TIME) AS AvgServiceSecs
                     FROM CUSTOMER_QUEUE_INFO_DAILY
                     WHERE TICKET_DATETIME BETWEEN @From AND @To
-                    AND (@Branch IS NULL OR LEVEL1_NR = @Branch)
-                    GROUP BY LEVEL1_NR, LEVEL1_NAME";
+                    AND (@Branch IS NULL OR OFFICE_NR = @Branch)
+                    GROUP BY OFFICE_NR, OFFICE_NAME";
 
             using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             var rawData = await conn.QueryAsync(sql, new { From = from, To = to, Branch = branch });
@@ -72,10 +72,10 @@ namespace QMSStatistics.Services
             0 AS Golden,
             AVG(WAITING_TIME) AS AvgWaitSecs,
             AVG(SERVICE_TIME) AS AvgServiceSecs
-        FROM CUSTOMER_QUEUE_INFO_DAILY
-        WHERE TICKET_DATETIME BETWEEN @From AND @To
-        GROUP BY LEVEL2_NR, LEVEL2_NAME
-        ORDER BY LEVEL2_NR";
+            FROM CUSTOMER_QUEUE_INFO_DAILY
+            WHERE TICKET_DATETIME BETWEEN @From AND @To
+            GROUP BY LEVEL2_NR, LEVEL2_NAME
+            ORDER BY LEVEL2_NR";
 
             using var conn = new SqlConnection(_config.GetConnectionString("QMS"));
             var rawData = await conn.QueryAsync(sql, new { From = from, To = to });
