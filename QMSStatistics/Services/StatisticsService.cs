@@ -28,6 +28,7 @@ namespace QMSStatistics.Services
 
         public async Task<List<BranchStat>> GetHistoricalStatsAsync(DateTime from, DateTime to, string? area = null, string? branch = null)
         {
+            Console.WriteLine("RealStatisticsService CALLED with branch: " + branch);
             var sql = @"
                 SELECT 
                     OFFICE_NR AS OfficeNr,
@@ -40,7 +41,7 @@ namespace QMSStatistics.Services
                     AVG(SERVICE_TIME) AS AvgServiceSecs
                     FROM CUSTOMER_QUEUE_INFO_DAILY
                     WHERE TICKET_DATETIME BETWEEN @From AND @To
-                    AND (@Branch IS NULL OR OFFICE_NR = @Branch)
+                    AND (@Branch IS NULL OR OFFICE_NR = TRY_CAST(@Branch AS INT))
                     GROUP BY OFFICE_NR, OFFICE_NAME";
 
             using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));

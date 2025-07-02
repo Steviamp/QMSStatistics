@@ -9,7 +9,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddScoped<IStatisticsService, MockStatisticsService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 var app = builder.Build();
 

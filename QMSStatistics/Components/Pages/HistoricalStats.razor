@@ -21,8 +21,8 @@
     <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
 </div>
 
-<p class="text-muted">🔍 Επιλεγμένο κατάστημα: @selectedBranch</p>
-<p class="text-muted">📊 Πλήθος αποτελεσμάτων: @(stats?.Count ?? 0)</p>
+<p class="text-muted">Επιλεγμένο κατάστημα: @selectedBranch</p>
+<p class="text-muted">Πλήθος αποτελεσμάτων: @(stats?.Count ?? 0)</p>
 
 @if (stats == null)
 {
@@ -72,23 +72,23 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("🚀 OnInitializedAsync started");
+        Console.WriteLine("OnInitializedAsync started");
         branches = await StatisticsService.GetAllBranchesAsync();
-        Console.WriteLine($"📍 Loaded branches: {branches.Count}");
+        Console.WriteLine($"Loaded branches: {branches.Count}");
         await LoadStatsAsync();
     }
 
     private async Task ApplyFilters()
     {
-        Console.WriteLine($"✅ Apply clicked with branch: {selectedBranch}");
+        Console.WriteLine($"Apply clicked with branch: {selectedBranch}");
         await LoadStatsAsync();
     }
 
     private async Task LoadStatsAsync()
     {
-        Console.WriteLine("📥 LoadStatsAsync CALLED");
+        Console.WriteLine("LoadStatsAsync CALLED");
         stats = await StatisticsService.GetHistoricalStatsAsync(fromDate, toDate, null, selectedBranch);
         StateHasChanged();
-        Console.WriteLine($"📊 Stats loaded: {stats?.Count ?? 0}");
+        Console.WriteLine($"Stats loaded: {stats?.Count ?? 0}");
     }
 }
