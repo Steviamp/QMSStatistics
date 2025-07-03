@@ -45,7 +45,7 @@ namespace QMSStatistics.Services
                     MAX(DATEDIFF(SECOND, FORWARDING_DATETIME, END_DATETIME)) AS MaxWaitSecs
                     FROM CUSTOMER_QUEUE_INFO_DAILY
                     WHERE TICKET_DATETIME BETWEEN @From AND @To
-                    AND (@Branch IS NULL OR OFFICE_NR = TRY_CAST(@Branch AS INT))
+                    AND (@Branch IS NULL OR @Branch = '' OR OFFICE_NR = TRY_CAST(@Branch AS INT))
                     GROUP BY OFFICE_NR, OFFICE_NAME
                     ORDER BY OFFICE_NR";
 
