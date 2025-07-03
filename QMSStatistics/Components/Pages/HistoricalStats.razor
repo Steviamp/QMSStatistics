@@ -7,17 +7,16 @@
 
 <h4>Filters</h4>
 <div class="mb-4 d-flex gap-2">
-    <InputDate @bind-Value="fromDate" class="form-control" />
-    <InputDate @bind-Value="toDate" class="form-control" />
+    <InputDate @bind-Value="fromDate" @bind-Value:event="oninput"  class="form-control" />
+    <InputDate @bind-Value="toDate" @bind-Value:event="oninput" class="form-control" />
 
     <select class="form-select" @bind="selectedBranch">
         <option value="">All Branches</option>
         @foreach (var b in branches)
         {
-            <option value="@b.OfficeNr">@b.OfficeNr - @b.OfficeName</option>
+            <option value="@b.OfficeNr.ToString()">@b.OfficeNr - @b.OfficeName</option>
         }
     </select>
-
     <button class="btn btn-primary" @onclick="ApplyFilters">Apply</button>
 </div>
 
@@ -71,7 +70,7 @@ else
 }
 
 @code {
-    private DateTime fromDate = DateTime.Today.AddDays(-1);
+    private DateTime fromDate = DateTime.Today.AddDays(-120);
     private DateTime toDate = DateTime.Today;
     private string? selectedBranch = null;
 
@@ -83,20 +82,51 @@ else
         Console.WriteLine("OnInitializedAsync started");
         branches = await StatisticsService.GetAllBranchesAsync();
         Console.WriteLine($"Loaded branches: {branches.Count}");
+        // Debug branch data
+        foreach (var branch in branches.Take(3))
+        {
+            Console.WriteLine($"Branch: {branch.OfficeNr} - {branch.OfficeName}");
+        }
+
         await LoadStatsAsync();
     }
 
     private async Task ApplyFilters()
     {
+        Console.WriteLine("=== APPLY FILTERS CLICKED ===");
+        Console.WriteLine($"ApplyFilters called - selectedBranch: '{selectedBranch}'");
+        Console.WriteLine($"From: {fromDate}, To: {toDate}, Branch: '{selectedBranch}'");
         Console.WriteLine($"Apply clicked with branch: {selectedBranch}");
-        await LoadStatsAsync();
+        try
+        {
+            await LoadStatsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in ApplyFilters: {ex.Message}");
+        }
+
     }
 
     private async Task LoadStatsAsync()
     {
         Console.WriteLine("LoadStatsAsync CALLED");
+        Console.WriteLine($"Date range: {fromDate:yyyy-MM-dd} to {toDate:yyyy-MM-dd}");
+        Console.WriteLine($"Selected branch: '{selectedBranch}'");
+        Console.WriteLine($"Branch is null or empty: {string.IsNullOrEmpty(selectedBranch)}");
+
         stats = await StatisticsService.GetHistoricalStatsAsync(fromDate, toDate, null, selectedBranch);
         StateHasChanged();
         Console.WriteLine($"Stats loaded: {stats?.Count ?? 0}");
+        if (stats != null && stats.Count > 0)
+        {
+            Console.WriteLine($"First result: Office {stats[0].OfficeNr} - {stats[0].OfficeName}");
+            if (!string.IsNullOrEmpty(selectedBranch))
+            {
+                var filteredCount = stats.Count(s => s.OfficeNr.ToString() == selectedBranch);
+                Console.WriteLine($"Records matching selected branch: {filteredCount}");
+            }
+        }
+
     }
 }
