@@ -42,6 +42,10 @@ else
                 <th>Golden</th>
                 <th>Avg Wait</th>
                 <th>Avg Service</th>
+                <th>Avg Customer</th>
+                <th>Obj. Wait %</th>
+                <th>Obj. Service %</th>
+                <th>Max Wait (sec)</th>
             </tr>
         </thead>
         <tbody>
@@ -54,8 +58,12 @@ else
                     <td>@s.Unattended</td>
                     <td>@s.Served</td>
                     <td>@s.Golden</td>
-                    <td>@s.AvgWait</td>
-                    <td>@s.AvgService</td>
+                    <td>@Math.Round(s.AvgWaitSecs)</td>
+                    <td>@Math.Round(s.AvgServiceSecs)</td>
+                    <td>@Math.Round(s.AvgCustomerSecs)</td>
+                    <td>@Math.Round(s.ObjectiveWaitPct)%</td>
+                    <td>@Math.Round(s.ObjectiveServicePct)%</td>
+                    <td>@s.MaxWaitSecs</td>
                 </tr>
             }
         </tbody>
